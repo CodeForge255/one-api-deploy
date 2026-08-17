@@ -1,0 +1,31 @@
+version: '3'
+services:
+  one-api:
+    build: .
+    container_name: one-api
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - SESSION_SECRET=your_secret_key  # 可以随便改一改这串字符，作为密钥
+      - SQL_DSN=root:your_password@tcp(db)/oneapi?charset=utf8mb4&parseTime=True&loc=Local
+    depends_on:
+      - db
+    networks:
+      - one-api-network
+
+  db:
+    image: mysql:8.0
+    container_name: one-api-db
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=your_password  # 这里要和上面 SQL_DSN 里的密码一致
+      - MYSQL_DATABASE=oneapi
+    volumes:
+      - ./data:/var/lib/mysql
+    networks:
+      - one-api-network
+
+networks:
+  one-api-network:
+    driver: bridge
